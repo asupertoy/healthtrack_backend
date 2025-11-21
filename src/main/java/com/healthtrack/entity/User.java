@@ -51,7 +51,7 @@ public class User {
     @JsonIgnore
     private List<Email> emails;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "bookingUser", cascade = CascadeType.ALL)  // 改为bookingUser
     @JsonIgnore
     private List<Appointment> appointments;
 
