@@ -24,13 +24,13 @@ public class User {
     @Column(name = "health_id", nullable = false, unique = true, length = 64)
     private String healthId;
 
-    @Column(name = "name", length = 100)
+    @Column(name = "name", length = 50)
     private String name;
 
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 
-    @Column(name = "phone", length = 32)
+    @Column(name = "phone", length = 32, unique = true)
     private String phone;
 
     @Column(name = "phone_verified")
@@ -39,10 +39,10 @@ public class User {
     @Column(name = "phone_verified_at")
     private LocalDateTime phoneVerifiedAt;
 
-    @Column(name = "created_at", updatable = false)
+    @Column(name = "created_at", updatable = false, insertable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
+    @Column(name = "updated_at", insertable = false)
     private LocalDateTime updatedAt;
 
     /* --------------------- Relations ---------------------- */
@@ -51,7 +51,7 @@ public class User {
     @JsonIgnore
     private List<Email> emails;
 
-    @OneToMany(mappedBy = "bookingUser", cascade = CascadeType.ALL)  // 改为bookingUser
+    @OneToMany(mappedBy = "bookingUser", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Appointment> appointments;
 
@@ -78,16 +78,4 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<FamilyGroupMember> familyGroupMemberships;
-
-    /* --------------------- Auto timestamps ---------------------- */
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = createdAt;
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
-    }
 }

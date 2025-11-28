@@ -29,14 +29,17 @@ public class Appointment {
     @JsonIgnore
     private Provider provider;
 
-    @Column(name = "provider_email", length = 30)
+    @Column(name = "provider_email", length = 191)
     private String providerEmail;
 
-    @Column(name = "scheduled_at")
+    @Column(name = "provider_license", length = 20)
+    private String providerLicense;
+
+    @Column(name = "scheduled_at", nullable = false)
     private LocalDateTime scheduledAt;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "consultation_type", length = 20)
+    @Column(name = "consultation_type", length = 20, nullable = false)
     private ConsultationType consultationType;
 
     @Column(name = "memo", columnDefinition = "TEXT")
@@ -44,9 +47,9 @@ public class Appointment {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", length = 20)
-    private AppointmentStatus status = AppointmentStatus.SCHEDULED;
+    private AppointmentStatus status = AppointmentStatus.scheduled;
 
-    @Column(name = "created_at", updatable = false)
+    @Column(name = "created_at", updatable = false, insertable = false)
     private LocalDateTime createdAt;
 
     @Column(name = "cancelled_at")
@@ -56,15 +59,10 @@ public class Appointment {
     private String cancellationReason;
 
     public enum ConsultationType {
-        IN_PERSON, VIRTUAL
+        In_Person, Virtual
     }
 
     public enum AppointmentStatus {
-        SCHEDULED, CANCELLED, COMPLETED, NO_SHOW
-    }
-
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
+        scheduled, cancelled, completed, no_show
     }
 }

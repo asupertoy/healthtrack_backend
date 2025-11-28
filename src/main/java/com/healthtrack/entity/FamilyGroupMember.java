@@ -21,12 +21,12 @@ public class FamilyGroupMember {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "group_id")
+    @JoinColumn(name = "group_id", nullable = false)
     @JsonIgnore
     private FamilyGroup familyGroup;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     @JsonIgnore
     private User user;
 
@@ -36,11 +36,6 @@ public class FamilyGroupMember {
     @Column(name = "permission", length = 100)
     private String permission;
 
-    @Column(name = "joined_at")
+    @Column(name = "joined_at", insertable = false, updatable = false)
     private LocalDateTime joinedAt;
-
-    @PrePersist
-    protected void onCreate() {
-        joinedAt = LocalDateTime.now();
-    }
 }

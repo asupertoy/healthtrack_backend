@@ -24,7 +24,7 @@ public class Invitation {
     @JsonIgnore
     private User inviter;
 
-    @Column(name = "receiver_email", length = 30)
+    @Column(name = "receiver_email", length = 191)
     private String receiverEmail;
 
     @Column(name = "receiver_phone", length = 32)
@@ -38,9 +38,9 @@ public class Invitation {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", length = 20)
-    private InvitationStatus status = InvitationStatus.PENDING;
+    private InvitationStatus status = InvitationStatus.pending;
 
-    @Column(name = "initiated_at")
+    @Column(name = "initiated_at", insertable = false, updatable = false)
     private LocalDateTime initiatedAt;
 
     @Column(name = "completed_at")
@@ -53,11 +53,6 @@ public class Invitation {
     private String note;
 
     public enum InvitationStatus {
-        PENDING, ACCEPTED, EXPIRED, CANCELLED
-    }
-
-    @PrePersist
-    protected void onCreate() {
-        initiatedAt = LocalDateTime.now();
+        pending, accepted, expired, cancelled
     }
 }

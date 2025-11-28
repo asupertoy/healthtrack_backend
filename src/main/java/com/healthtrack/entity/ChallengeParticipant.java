@@ -20,7 +20,7 @@ public class ChallengeParticipant {
     private Long participationId;
 
     @ManyToOne
-    @JoinColumn(name = "challenge_id")
+    @JoinColumn(name = "challenge_id", nullable = false)
     @JsonIgnore
     private Challenge challenge;
 
@@ -29,7 +29,7 @@ public class ChallengeParticipant {
     @JsonIgnore
     private User user;
 
-    @Column(name = "invited_contact_email", length = 30)
+    @Column(name = "invited_contact_email", length = 191)
     private String invitedContactEmail;
 
     @Column(name = "invited_contact_phone", length = 32)
@@ -43,10 +43,11 @@ public class ChallengeParticipant {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", length = 20)
-    private ParticipantStatus status = ParticipantStatus.INVITED;
+    @Builder.Default
+    private ParticipantStatus status = ParticipantStatus.invited;
 
     public enum ParticipantStatus {
-        INVITED, JOINED, LEFT, COMPLETED
+        invited, joined, left, completed
     }
 
     @PrePersist

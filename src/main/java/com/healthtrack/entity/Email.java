@@ -22,9 +22,10 @@ public class Email {
     @ManyToOne
     @JoinColumn(name = "user_id")
     @JsonIgnore
-    private User user;
+    private User user; // nullable per schema
 
-    @Column(name = "email", nullable = false, unique = true, length = 30)
+    // emails.email VARCHAR(191) UNIQUE NOT NULL
+    @Column(name = "email", nullable = false, unique = true, length = 191)
     private String emailAddress;
 
     @Column(name = "verified")
@@ -33,11 +34,8 @@ public class Email {
     @Column(name = "verified_at")
     private LocalDateTime verifiedAt;
 
-    @Column(name = "created_at", updatable = false)
+    @Column(name = "created_at", updatable = false, insertable = false)
     private LocalDateTime createdAt;
 
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-    }
+    // remove @PrePersist, DB default CURRENT_TIMESTAMP will populate created_at
 }

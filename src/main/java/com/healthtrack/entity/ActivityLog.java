@@ -11,13 +11,16 @@ public class ActivityLog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "user_id")
     private Long userId;
 
+    @Column(name = "action_type", length = 100)
     private String actionType;
 
-    @Column(columnDefinition = "json")
+    @Column(name = "action_detail", columnDefinition = "JSON")
     private String actionDetail;
 
+    @Column(name = "created_at", insertable = false, updatable = false)
     private LocalDateTime createdAt;
 
     // Getters & Setters

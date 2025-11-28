@@ -28,16 +28,11 @@ public class FamilyGroup {
     @JsonIgnore
     private User createdBy;
 
-    @Column(name = "created_at", updatable = false)
+    @Column(name = "created_at", updatable = false, insertable = false)
     private LocalDateTime createdAt;
 
     /* --------------------- Relations ---------------------- */
     @OneToMany(mappedBy = "familyGroup", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<FamilyGroupMember> members;
-
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-    }
 }

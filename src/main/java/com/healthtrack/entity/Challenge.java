@@ -35,7 +35,7 @@ public class Challenge {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", length = 20)
-    private ChallengeStatus status = ChallengeStatus.ACTIVE;
+    private ChallengeStatus status = ChallengeStatus.active;
 
     @ManyToOne
     @JoinColumn(name = "creator_id")
@@ -45,7 +45,7 @@ public class Challenge {
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "created_at", updatable = false)
+    @Column(name = "created_at", updatable = false, insertable = false)
     private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "challenge", cascade = CascadeType.ALL)
@@ -53,11 +53,6 @@ public class Challenge {
     private List<ChallengeParticipant> participants;
 
     public enum ChallengeStatus {
-        ACTIVE, COMPLETED, CANCELLED
-    }
-
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
+        active, completed, cancelled
     }
 }

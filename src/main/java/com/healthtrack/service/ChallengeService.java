@@ -50,7 +50,8 @@ public class ChallengeService {
         ChallengeParticipant participant = new ChallengeParticipant();
         participant.setChallenge(challenge);
         participant.setUser(user);
-        participant.setStatus(ChallengeParticipant.ParticipantStatus.JOINED);
+        // 默认状态在实体中为 invited，如需立即标记为 joined 可以使用小写 joined 枚举
+        // participant.setStatus(ChallengeParticipant.ParticipantStatus.joined);
 
         return participantRepository.save(participant);
     }

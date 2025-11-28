@@ -21,26 +21,23 @@ public class UserProviderLink {
     private Long linkId;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     @JsonIgnore
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "provider_id")
+    @JoinColumn(name = "provider_id", nullable = false)
     @JsonIgnore
     private Provider provider;
 
     @Column(name = "verification_status", length = 50)
     private String verificationStatus = "unverified";
 
-    @Column(name = "linked_at")
+    @Column(name = "linked_at", insertable = false)
     private LocalDateTime linkedAt;
 
     @Column(name = "is_primary")
     private Boolean isPrimary = false;
 
-    @PrePersist
-    protected void onCreate() {
-        linkedAt = LocalDateTime.now();
-    }
+    // generated column upl_primary_user_id is managed by DB only and not mapped here
 }

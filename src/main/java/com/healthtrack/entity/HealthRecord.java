@@ -21,17 +21,17 @@ public class HealthRecord {
     private Long recordId;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     @JsonIgnore
     private User user;
 
-    @Column(name = "record_date")
+    @Column(name = "record_date", nullable = false)
     private LocalDate recordDate;
 
-    @Column(name = "recorded_at")
+    @Column(name = "recorded_at", insertable = false, updatable = false)
     private LocalDateTime recordedAt;
 
-    @Column(name = "metric_type", length = 100)
+    @Column(name = "metric_type", length = 100, nullable = false)
     private String metricType;
 
     @Column(name = "metric_value")
@@ -43,12 +43,6 @@ public class HealthRecord {
     @Column(name = "metric_unit", length = 64)
     private String metricUnit;
 
-    @Column(name = "created_at", updatable = false)
+    @Column(name = "created_at", updatable = false, insertable = false)
     private LocalDateTime createdAt;
-
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        recordedAt = LocalDateTime.now();
-    }
 }

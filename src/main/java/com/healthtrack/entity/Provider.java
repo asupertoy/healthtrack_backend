@@ -26,7 +26,8 @@ public class Provider {
     @Column(name = "name", length = 50)
     private String name;
 
-    @Column(name = "email", length = 30)
+    // providers.email VARCHAR(191)
+    @Column(name = "email", length = 191)
     private String email;
 
     @Column(name = "phone", length = 32)
@@ -38,7 +39,7 @@ public class Provider {
     @Column(name = "verified_at")
     private LocalDateTime verifiedAt;
 
-    @Column(name = "created_at", updatable = false)
+    @Column(name = "created_at", updatable = false, insertable = false)
     private LocalDateTime createdAt;
 
     /* --------------------- Relations ---------------------- */
@@ -49,9 +50,4 @@ public class Provider {
     @OneToMany(mappedBy = "provider", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Appointment> appointments;
-
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-    }
 }
