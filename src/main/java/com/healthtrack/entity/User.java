@@ -91,4 +91,16 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<FamilyGroupMember> familyGroupMemberships;
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "userId=" + userId +
+                ", healthId='" + healthId + '\'' +
+                ", name='" + name + '\'' +
+                ", phone='" + phone + '\'' +
+                ", enabled=" + enabled +
+                ", accountNonLocked=" + accountNonLocked +
+                '}';
+    }
 }
