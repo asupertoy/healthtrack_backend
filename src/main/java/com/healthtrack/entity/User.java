@@ -39,6 +39,19 @@ public class User {
     @Column(name = "phone_verified_at")
     private LocalDateTime phoneVerifiedAt;
 
+    @JsonIgnore
+    @Column(name = "password", length = 255)
+    private String password;
+
+    @Column(name = "enabled", nullable = false)
+    private Boolean enabled = true;
+
+    @Column(name = "account_non_locked", nullable = false)
+    private Boolean accountNonLocked = true;
+
+    @Column(name = "last_login_at")
+    private LocalDateTime lastLoginAt;
+
     @Column(name = "created_at", updatable = false, insertable = false)
     private LocalDateTime createdAt;
 

@@ -38,7 +38,7 @@ public class Appointment {
     @Column(name = "scheduled_at", nullable = false)
     private LocalDateTime scheduledAt;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = AppointmentConsultationTypeConverter.class)
     @Column(name = "consultation_type", length = 20, nullable = false)
     private ConsultationType consultationType;
 
@@ -59,7 +59,27 @@ public class Appointment {
     private String cancellationReason;
 
     public enum ConsultationType {
-        In_Person, Virtual
+        IN_PERSON("In-Person"),
+        VIRTUAL("Virtual");
+
+        private final String dbValue;
+
+        ConsultationType(String dbValue) {
+            this.dbValue = dbValue;
+        }
+
+        public String getDbValue() {
+            return dbValue;
+        }
+
+        public static ConsultationType fromDbValue(String dbValue) {
+            for (ConsultationType type : values()) {
+                if (type.dbValue.equalsIgnoreCase(dbValue)) {
+                    return type;
+                }
+            }
+            throw new IllegalArgumentException("Unknown consultation type: " + dbValue);
+        }
     }
 
     public enum AppointmentStatus {

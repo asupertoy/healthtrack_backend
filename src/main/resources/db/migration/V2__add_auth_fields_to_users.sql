@@ -1,0 +1,6 @@
+ALTER TABLE users
+    ADD COLUMN password VARCHAR(255) NULL,
+    ADD COLUMN enabled TINYINT(1) NOT NULL DEFAULT 1,
+    ADD COLUMN account_non_locked TINYINT(1) NOT NULL DEFAULT 1,
+    ADD COLUMN last_login_at DATETIME NULL;
+
