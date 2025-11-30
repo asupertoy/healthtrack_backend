@@ -1,5 +1,7 @@
 package com.healthtrack.service;
 
+import com.healthtrack.dto.RegisterRequest;
+import com.healthtrack.entity.Email;
 import com.healthtrack.entity.MonthlySummary;
 import com.healthtrack.entity.User;
 import com.healthtrack.entity.UserProviderLink;
@@ -8,7 +10,9 @@ import com.healthtrack.repository.MonthlySummaryRepository;
 import com.healthtrack.repository.UserProviderLinkRepository;
 import com.healthtrack.repository.UserRepository;
 import com.healthtrack.repository.ProviderRepository;
+import com.healthtrack.repository.EmailRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,12 +26,31 @@ public class UserService {
     private final UserProviderLinkRepository userProviderLinkRepository;
     private final ProviderRepository providerRepository;
     private final MonthlySummaryRepository monthlySummaryRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final EmailRepository emailRepository;
 
     // =====================
     // User 相关操作
     // =====================
 
     public User createUser(User user) {
+        // 业务层先查后插，避免直接触发数据库唯一约束异常
+        if (user.getHealthId() != null) {
+            userRepository.findByHealthId(user.getHealthId()).ifPresent(existing -> {
+                throw new IllegalArgumentException("健康档案号已存在: " + user.getHealthId());
+            });
+        }
+        if (user.getPhone() != null) {
+            userRepository.findByPhone(user.getPhone()).ifPresent(existing -> {
+                throw new IllegalArgumentException("手机号已被使用: " + user.getPhone());
+            });
+        }
+
+        // 如果前端传入了原始密码，这里进行加密存储
+        if (user.getPassword() != null && !user.getPassword().isBlank()) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
+
         return userRepository.save(user);
     }
 
@@ -109,5 +132,49 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         return monthlySummaryRepository.findByUser(user);
+    }
+
+    // =====================
+    // 注册相关操作
+    // =====================
+    @Transactional
+    public User register(RegisterRequest request) {
+        // 唯一性校验
+        if (request.getHealthId() != null) {
+            userRepository.findByHealthId(request.getHealthId()).ifPresent(existing -> {
+                throw new IllegalArgumentException("健康档案号已存在: " + request.getHealthId());
+            });
+        }
+        if (request.getPhone() != null) {
+            userRepository.findByPhone(request.getPhone()).ifPresent(existing -> {
+                throw new IllegalArgumentException("手机号已被使用: " + request.getPhone());
+            });
+        }
+
+        // 创建用户并加密密码
+        User user = User.builder()
+                .healthId(request.getHealthId())
+                .name(request.getName())
+                .phone(request.getPhone())
+                .enabled(true)
+                .accountNonLocked(true)
+                .build();
+
+        if (request.getPassword() != null && !request.getPassword().isBlank()) {
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+        }
+
+        User saved = userRepository.save(user);
+
+        // 如果传了邮箱，创建 Email 记录并关联
+        if (request.getEmail() != null && !request.getEmail().isBlank()) {
+            Email email = new Email();
+            email.setUser(saved);
+            email.setEmailAddress(request.getEmail());
+            email.setVerified(false);
+            emailRepository.save(email);
+        }
+
+        return saved;
     }
 }
