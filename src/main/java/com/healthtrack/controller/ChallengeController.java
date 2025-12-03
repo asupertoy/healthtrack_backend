@@ -1,6 +1,7 @@
 // src/main/java/com/healthtrack/controller/ChallengeController.java
 package com.healthtrack.controller;
 
+import com.healthtrack.dto.ChallengeStats;
 import com.healthtrack.entity.Challenge;
 import com.healthtrack.entity.ChallengeParticipant;
 import com.healthtrack.service.ChallengeService;
@@ -27,6 +28,23 @@ public class ChallengeController {
     @GetMapping
     public ResponseEntity<List<Challenge>> getAll() {
         return ResponseEntity.ok(challengeService.getAllChallenges());
+    }
+
+    @GetMapping("/stats")
+    public ResponseEntity<List<ChallengeStats>> getStats() {
+        return ResponseEntity.ok(challengeService.getAllChallengeStats());
+    }
+
+    // 查询某个用户参与的挑战
+    @GetMapping("/by-user")
+    public ResponseEntity<List<Challenge>> getByUser(@RequestParam Long userId) {
+        return ResponseEntity.ok(challengeService.getChallengesByUser(userId));
+    }
+
+    // 查询某个用户尚未参加的挑战
+    @GetMapping("/not-joined-by-user")
+    public ResponseEntity<List<Challenge>> getNotJoinedByUser(@RequestParam Long userId) {
+        return ResponseEntity.ok(challengeService.getChallengesNotJoinedByUser(userId));
     }
 
     // -------------------

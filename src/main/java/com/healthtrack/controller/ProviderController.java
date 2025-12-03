@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/providers")
@@ -21,6 +22,12 @@ public class ProviderController {
     @GetMapping
     public ResponseEntity<List<Provider>> getAll() {
         return ResponseEntity.ok(providerRepository.findAll());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Provider> getById(@PathVariable Long id) {
+        Optional<Provider> opt = providerRepository.findById(id);
+        return opt.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping("/create")

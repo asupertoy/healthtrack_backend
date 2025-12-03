@@ -18,6 +18,7 @@ public class FamilyGroupMember {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
+    @JsonIgnore // 数据库内部标识，不对前端暴露
     private Long id;
 
     @ManyToOne
@@ -38,4 +39,14 @@ public class FamilyGroupMember {
 
     @Column(name = "joined_at", insertable = false, updatable = false)
     private LocalDateTime joinedAt;
+
+    // 对前端暴露 userId，方便关联用户
+    public Long getUserId() {
+        return user != null ? user.getUserId() : null;
+    }
+
+    // 对前端暴露 userName，方便直接展示成员名字
+    public String getUserName() {
+        return user != null ? user.getName() : null;
+    }
 }

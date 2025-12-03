@@ -58,6 +58,16 @@ public class Appointment {
     @Column(name = "cancellation_reason", length = 255)
     private String cancellationReason;
 
+    // 对前端暴露 providerId，方便关联医生/服务提供者
+    public Long getProviderId() {
+        return provider != null ? provider.getProviderId() : null;
+    }
+
+    // 如有需要，也可以暴露 bookingUserId，方便前端确认预约所属用户
+    public Long getBookingUserId() {
+        return bookingUser != null ? bookingUser.getUserId() : null;
+    }
+
     public enum ConsultationType {
         IN_PERSON("In-Person"),
         VIRTUAL("Virtual");

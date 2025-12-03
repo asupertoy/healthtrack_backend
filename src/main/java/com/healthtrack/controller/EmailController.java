@@ -6,6 +6,7 @@ import com.healthtrack.repository.EmailRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -49,5 +50,11 @@ public class EmailController {
     @PostMapping("/create")
     public ResponseEntity<Email> createEmail(@RequestBody Email email) {
         return ResponseEntity.ok(emailRepository.save(email));
+    }
+
+    @GetMapping("/by-user")
+    public ResponseEntity<List<Email>> getEmailsByUser(@RequestParam Long userId) {
+        List<Email> emails = emailRepository.findByUser_UserId(userId);
+        return ResponseEntity.ok(emails);
     }
 }

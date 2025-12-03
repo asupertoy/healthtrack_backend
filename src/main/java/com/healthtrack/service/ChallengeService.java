@@ -1,5 +1,6 @@
 package com.healthtrack.service;
 
+import com.healthtrack.dto.ChallengeStats;
 import com.healthtrack.entity.Challenge;
 import com.healthtrack.entity.ChallengeParticipant;
 import com.healthtrack.entity.User;
@@ -11,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -87,5 +90,49 @@ public class ChallengeService {
 
         participant.setStatus(status);
         return participantRepository.save(participant);
+    }
+
+    /**
+     * 返回用户参与的所有 Challenge（去重）
+     */
+    public List<Challenge> getChallengesByUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        List<ChallengeParticipant> parts = participantRepository.findByUser(user);
+
+        return parts.stream()
+                .map(ChallengeParticipant::getChallenge)
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * 返回所有挑战的参与人数与完成人数统计
+     */
+    public List<ChallengeStats> getAllChallengeStats() {
+        List<Challenge> challenges = challengeRepository.findAll();
+        return challenges.stream().map(ch -> {
+            long total = participantRepository.countByChallenge(ch);
+            long completed = participantRepository.countByChallengeAndStatus(ch, ChallengeParticipant.ParticipantStatus.completed);
+            return new ChallengeStats(ch.getChallengeId(), ch.getTitle(), total, completed);
+        }).collect(Collectors.toList());
+    }
+
+    /**
+     * 返回某个用户尚未参加的所有 Challenge
+     */
+    public List<Challenge> getChallengesNotJoinedByUser(Long userId) {
+        // 已参加的挑战
+        List<Challenge> joined = getChallengesByUser(userId);
+        if (joined.isEmpty()) {
+            // 用户尚未参与任何挑战，则未参与列表就是全部挑战
+            return challengeRepository.findAll();
+        }
+        List<Long> joinedIds = joined.stream()
+                .map(Challenge::getChallengeId)
+                .toList();
+
+        return challengeRepository.findByChallengeIdNotIn(joinedIds);
     }
 }

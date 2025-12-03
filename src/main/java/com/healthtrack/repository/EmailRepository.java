@@ -16,4 +16,7 @@ public interface EmailRepository extends JpaRepository<Email, Long> {
     // 可选：查询已验证/未验证的邮箱
     List<Email> findByVerifiedTrue();
     List<Email> findByVerifiedFalse();
+
+    // 根据用户 ID 查询其所有邮箱记录
+    List<Email> findByUser_UserId(Long userId);
 }

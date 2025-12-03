@@ -13,4 +13,11 @@ public interface ChallengeParticipantRepository extends JpaRepository<ChallengeP
     List<ChallengeParticipant> findByChallenge(Challenge challenge);
 
     Optional<ChallengeParticipant> findByChallengeAndUser(Challenge challenge, User user);
+
+    List<ChallengeParticipant> findByUser(User user);
+
+    // count helpers
+    long countByChallenge(Challenge challenge);
+
+    long countByChallengeAndStatus(Challenge challenge, ChallengeParticipant.ParticipantStatus status);
 }
