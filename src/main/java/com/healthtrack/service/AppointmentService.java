@@ -84,6 +84,14 @@ public class AppointmentService {
         return appointmentRepository.findByProvider_ProviderId(providerId);
     }
 
+    // 综合搜索：支持可选的 bookingUserId / providerId / 时间范围过滤
+    public List<Appointment> searchAppointments(Long bookingUserId,
+                                                Long providerId,
+                                                java.time.LocalDateTime startDate,
+                                                java.time.LocalDateTime endDate) {
+        return appointmentRepository.searchAppointments(bookingUserId, providerId, startDate, endDate);
+    }
+
     public Appointment cancelAppointment(Long id, CancelAppointmentRequest request) {
         Appointment appt = appointmentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Appointment not found"));
