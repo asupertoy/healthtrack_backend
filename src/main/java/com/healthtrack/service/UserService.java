@@ -63,7 +63,37 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
+    // 修改：在更新时做唯一性校验并对密码进行加密
     public User updateUser(User user) {
+        // 如果更新 healthId，检查是否被其他用户占用
+        if (user.getHealthId() != null) {
+            userRepository.findByHealthId(user.getHealthId()).ifPresent(existing -> {
+                if (!existing.getUserId().equals(user.getUserId())) {
+                    throw new IllegalArgumentException("健康档案号已存在: " + user.getHealthId());
+                }
+            });
+        }
+        // 如果更新 phone，检查是否被其他用户占用
+        if (user.getPhone() != null) {
+            userRepository.findByPhone(user.getPhone()).ifPresent(existing -> {
+                if (!existing.getUserId().equals(user.getUserId())) {
+                    throw new IllegalArgumentException("手机号已被使用: " + user.getPhone());
+                }
+            });
+        }
+
+        // 如果提供了新的明文密码，进行加密后存储
+        if (user.getPassword() != null && !user.getPassword().isBlank()) {
+            String pw = user.getPassword();
+            // If password already looks like a bcrypt hash (starts with $2a$/$2b$/$2y$ and length ~60), skip encoding
+            if (!(pw.startsWith("$2a$") || pw.startsWith("$2b$") || pw.startsWith("$2y$") ) || pw.length() < 59) {
+                user.setPassword(passwordEncoder.encode(pw));
+            }
+        }
+
+        // 在更新时同步设置 updatedAt 字段
+        user.setUpdatedAt(java.time.LocalDateTime.now());
+
         return userRepository.save(user);
     }
 

@@ -38,4 +38,9 @@ public class Email {
     private LocalDateTime createdAt;
 
     // remove @PrePersist, DB default CURRENT_TIMESTAMP will populate created_at
+
+    // Expose userId for front-end convenience without serializing the full User
+    public Long getUserId() {
+        return user != null ? user.getUserId() : null;
+    }
 }

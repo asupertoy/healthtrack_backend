@@ -48,8 +48,9 @@ public class JwtTokenProvider {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + accessTokenExpirationMs);
 
+        // Use immutable userId as subject to avoid issues when healthId/phone/email change
         return Jwts.builder()
-                .setSubject(user.getHealthId())
+                .setSubject(String.valueOf(user.getUserId()))
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .claim("type", "ACCESS")
@@ -62,7 +63,7 @@ public class JwtTokenProvider {
         Date expiryDate = new Date(now.getTime() + refreshTokenExpirationMs);
 
         return Jwts.builder()
-                .setSubject(user.getHealthId())
+                .setSubject(String.valueOf(user.getUserId()))
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .claim("type", "REFRESH")
@@ -85,8 +86,17 @@ public class JwtTokenProvider {
     }
 
     public Authentication getAuthentication(String token) {
-        String healthId = getSubject(token);
-        Optional<User> userOpt = userRepository.findByHealthId(healthId);
+        String subject = getSubject(token);
+        Optional<User> userOpt = Optional.empty();
+        // Try to parse subject as userId first (new tokens). If parsing fails, fall back to healthId for backward compatibility.
+        try {
+            long userId = Long.parseLong(subject);
+            userOpt = userRepository.findById(userId);
+        } catch (NumberFormatException ex) {
+            // fall back to previous behavior: subject was healthId
+            userOpt = userRepository.findByHealthId(subject);
+        }
+
         if (userOpt.isEmpty()) {
             return null;
         }

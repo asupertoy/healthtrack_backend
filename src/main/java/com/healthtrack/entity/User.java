@@ -58,6 +58,11 @@ public class User {
     @Column(name = "updated_at", insertable = false)
     private LocalDateTime updatedAt;
 
+    @PreUpdate
+    public void touchUpdatedAt() {
+        this.updatedAt = LocalDateTime.now();
+    }
+
     /* --------------------- Relations ---------------------- */
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)

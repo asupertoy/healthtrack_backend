@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.security.authentication.BadCredentialsException;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -22,6 +23,14 @@ public class GlobalExceptionHandler {
         body.put("message", message);
         body.put("path", path);
         return body;
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<Map<String, Object>> handleBadCredentials(BadCredentialsException ex,
+                                                                     HttpServletRequest request) {
+        HttpStatus status = HttpStatus.UNAUTHORIZED;
+        return ResponseEntity.status(status)
+                .body(buildBody(status, ex.getMessage(), request.getRequestURI()));
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
@@ -60,4 +69,3 @@ public class GlobalExceptionHandler {
                 .body(buildBody(status, ex.getMessage(), request.getRequestURI()));
     }
 }
-
